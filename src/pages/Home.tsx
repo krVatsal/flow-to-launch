@@ -1,10 +1,48 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-travel.jpg";
+import DestinationCard from "@/components/Cards/DestinationCard";
+import FeatureCard from "@/components/Cards/FeatureCard";
+
+// Import destination images
+import parisImage from "@/assets/paris.jpg";
+import tokyoImage from "@/assets/tokyo.jpg";
+import newYorkImage from "@/assets/new-york.jpg";
+import londonImage from "@/assets/london.jpg";
+import romeImage from "@/assets/rome.jpg";
+import barcelonaImage from "@/assets/barcelona.jpg";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const destinations = [
+    { name: "Paris", image: parisImage },
+    { name: "Tokyo", image: tokyoImage },
+    { name: "New York", image: newYorkImage },
+    { name: "London", image: londonImage },
+    { name: "Rome", image: romeImage },
+    { name: "Barcelona", image: barcelonaImage },
+  ];
+
+  const popularTrips = [
+    {
+      title: "Beach Getaway",
+      description: "Relax on the sandy shores",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop"
+    },
+    {
+      title: "Mountain Retreat",
+      description: "Hike through scenic trails",
+      image: "https://images.unsplash.com/photo-1464822759844-d150baec93d1?w=600&h=400&fit=crop"
+    },
+    {
+      title: "City Exploration",
+      description: "Discover vibrant city life",
+      image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&h=400&fit=crop"
+    }
+  ];
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -44,43 +82,49 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Suggested Destinations */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Preview Smart Features</h2>
+            <h2 className="text-4xl font-bold mb-4">Suggested Destinations</h2>
+            <p className="text-xl text-muted-foreground">
+              Discover your next adventure
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
+            {destinations.map((destination) => (
+              <DestinationCard
+                key={destination.name}
+                name={destination.name}
+                image={destination.image}
+                onClick={() => navigate(`/compare?destinations=${destination.name}`)}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Trips */}
+      <section className="py-20 px-4 bg-gradient-subtle">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Popular Trips</h2>
             <p className="text-xl text-muted-foreground">
               Everything you need to plan the perfect trip
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl p-8">
-              <div className="bg-white rounded-xl p-4 mb-6 inline-block">
-                <div className="w-16 h-16 bg-orange-200 rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">🤖</span>
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold mb-3">AI Reminders</h3>
-              <p className="text-gray-700 mb-4">
-                Get smart reminders for your travel plans, including flight updates, 
-                gate changes, and more.
-              </p>
-              <Button variant="travel-ghost">View Reminders</Button>
-            </div>
-
-            <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-8">
-              <div className="bg-white rounded-xl p-4 mb-6 inline-block">
-                <div className="w-16 h-16 bg-blue-200 rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">📅</span>
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold mb-3">Upcoming Trips</h3>
-              <p className="text-gray-700 mb-4">
-                View your upcoming trips and travel details directly from your calendar.
-              </p>
-              <Button variant="travel-ghost">View Trips</Button>
-            </div>
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {popularTrips.map((trip) => (
+              <FeatureCard
+                key={trip.title}
+                title={trip.title}
+                description={trip.description}
+                image={trip.image}
+                buttonText="Explore"
+                onButtonClick={() => navigate("/explore")}
+              />
+            ))}
           </div>
         </div>
       </section>

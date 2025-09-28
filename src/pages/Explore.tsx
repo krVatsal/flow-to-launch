@@ -1,119 +1,172 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Send } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Upload, Search, Sparkles, ArrowRight, Send } from "lucide-react";
 import { useState } from "react";
-import DestinationCard from "@/components/Cards/DestinationCard";
-import FeatureCard from "@/components/Cards/FeatureCard";
 import { useNavigate } from "react-router-dom";
 
-// Import destination images
-import parisImage from "@/assets/paris.jpg";
-import tokyoImage from "@/assets/tokyo.jpg";
-import newYorkImage from "@/assets/new-york.jpg";
-import londonImage from "@/assets/london.jpg";
-import romeImage from "@/assets/rome.jpg";
-import barcelonaImage from "@/assets/barcelona.jpg";
-
 const Explore = () => {
-  const [tripDescription, setTripDescription] = useState("");
+  const [destination, setDestination] = useState("");
+  const [step, setStep] = useState(1);
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'ai', content: string}>>([]);
+  const [currentMessage, setCurrentMessage] = useState("");
+  const [showItinerary, setShowItinerary] = useState(false);
   const navigate = useNavigate();
 
-  const destinations = [
-    { name: "Paris", image: parisImage },
-    { name: "Tokyo", image: tokyoImage },
-    { name: "New York", image: newYorkImage },
-    { name: "London", image: londonImage },
-    { name: "Rome", image: romeImage },
-    { name: "Barcelona", image: barcelonaImage },
-  ];
-
-  const popularTrips = [
-    {
-      title: "Beach Getaway",
-      description: "Relax on the sandy shores",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop"
-    },
-    {
-      title: "Mountain Retreat",
-      description: "Hike through scenic trails",
-      image: "https://images.unsplash.com/photo-1464822759844-d150baec93d1?w=600&h=400&fit=crop"
-    },
-    {
-      title: "City Exploration",
-      description: "Discover vibrant city life",
-      image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&h=400&fit=crop"
-    }
-  ];
-
-  const handlePlanTrip = () => {
-    if (tripDescription.trim()) {
-      navigate("/planning");
+  const handleNext = () => {
+    if (destination.trim()) {
+      setStep(2);
+      // Start chat with initial message
+      setChatMessages([
+        { role: 'ai', content: `Great! You want to visit ${destination}. Let me help you plan the perfect trip. What type of experience are you looking for?` }
+      ]);
     }
   };
 
-  return (
-    <div className="min-h-screen py-8 px-4">
-      <div className="container mx-auto max-w-6xl">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4">Plan your next adventure</h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Tell us your travel dreams, and our AI will craft the perfect itinerary for you.
-          </p>
+  const handleSendMessage = () => {
+    if (currentMessage.trim()) {
+      setChatMessages(prev => [...prev, { role: 'user', content: currentMessage }]);
+      setCurrentMessage("");
+      
+      // Simulate AI response
+      setTimeout(() => {
+        setChatMessages(prev => [...prev, { 
+          role: 'ai', 
+          content: "Based on your preferences, I'm creating a personalized itinerary for you. This will include the best places to visit, activities, and local recommendations!"
+        }]);
+        
+        // Show itinerary after a few messages
+        if (chatMessages.length > 2) {
+          setTimeout(() => setShowItinerary(true), 2000);
+        }
+      }, 1000);
+    }
+  };
 
-          {/* Trip Planning Input */}
-          <div className="max-w-4xl mx-auto">
-            <div className="flex gap-4 p-2 bg-background border rounded-2xl shadow-card">
-              <Input
-                placeholder="Describe your perfect trip... e.g., 'A sunny beach vacation in Greece for 10 days'"
-                value={tripDescription}
-                onChange={(e) => setTripDescription(e.target.value)}
-                className="flex-1 border-0 text-lg h-14 bg-transparent focus-visible:ring-0"
-                onKeyPress={(e) => e.key === 'Enter' && handlePlanTrip()}
-              />
-              <Button 
-                variant="travel" 
-                size="lg"
-                onClick={handlePlanTrip}
-                disabled={!tripDescription.trim()}
-              >
-                <Send className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
+  const handleCompare = () => {
+    navigate("/compare?generated=true");
+  };
+
+  if (step === 1) {
+    return (
+      <div className="min-h-screen flex items-center justify-center py-12 px-4">
+        <div className="w-full max-w-lg">
+          <Card className="shadow-xl">
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-sm font-medium text-muted-foreground">Step 1 of 3</p>
+                    <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
+                      <Search className="h-4 w-4" />
+                      <span>Destination</span>
+                    </div>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div className="bg-travel-blue h-2 rounded-full" style={{ width: "33%" }}></div>
+                  </div>
+                </div>
+                
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold mb-2">Where do you want to go?</h2>
+                  <p className="text-muted-foreground">Let our AI help you plan the perfect trip.</p>
+                </div>
+                
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Search className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <Input
+                    className="pl-12 pr-12 py-4 text-lg"
+                    placeholder="e.g., Paris, France"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleNext()}
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+                    <Sparkles className="h-4 w-4 text-travel-blue animate-pulse" />
+                  </div>
+                </div>
+                
+                <div className="flex justify-end pt-4">
+                  <Button 
+                    variant="travel" 
+                    size="lg"
+                    onClick={handleNext}
+                    disabled={!destination.trim()}
+                    className="gap-2"
+                  >
+                    Next
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Chat Interface */}
+      <div className="flex-1 max-w-4xl mx-auto w-full p-4">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold mb-2">Planning your trip to {destination}</h1>
+          <p className="text-muted-foreground">Let's create the perfect itinerary together</p>
         </div>
 
-        {/* Suggested Destinations */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8">Suggested destinations</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {destinations.map((destination) => (
-              <DestinationCard
-                key={destination.name}
-                name={destination.name}
-                image={destination.image}
-                onClick={() => navigate(`/compare?destinations=${destination.name}`)}
-              />
-            ))}
-          </div>
-        </section>
+        {/* Chat Messages */}
+        <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
+          {chatMessages.map((message, index) => (
+            <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                message.role === 'user' 
+                  ? 'bg-travel-blue text-white' 
+                  : 'bg-muted text-foreground'
+              }`}>
+                {message.content}
+              </div>
+            </div>
+          ))}
+        </div>
 
-        {/* Popular Trips */}
-        <section>
-          <h2 className="text-3xl font-bold mb-8">Popular trips</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {popularTrips.map((trip) => (
-              <FeatureCard
-                key={trip.title}
-                title={trip.title}
-                description={trip.description}
-                image={trip.image}
-                buttonText="Explore"
-                onButtonClick={() => navigate("/planning")}
-              />
-            ))}
-          </div>
-        </section>
+        {/* Input */}
+        <div className="flex gap-2">
+          <Input
+            placeholder="Tell me about your travel preferences..."
+            value={currentMessage}
+            onChange={(e) => setCurrentMessage(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            className="flex-1"
+          />
+          <Button onClick={handleSendMessage} variant="travel">
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Itinerary Generated */}
+        {showItinerary && (
+          <Card className="mt-8 border-travel-blue">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <h3 className="text-lg font-bold mb-2">🎉 Your itinerary is ready!</h3>
+                <p className="text-muted-foreground mb-4">
+                  I've created a personalized {destination} itinerary based on your preferences.
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <Button variant="travel" onClick={() => navigate("/planning")}>
+                    View Itinerary
+                  </Button>
+                  <Button variant="travel-outline" onClick={handleCompare}>
+                    Compare Destinations
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
