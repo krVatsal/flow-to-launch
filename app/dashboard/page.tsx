@@ -2,17 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Cloud, 
-  MapPin, 
-  DollarSign, 
-  Calendar, 
-  FileText,
-  Settings,
-  BarChart3,
-  Route,
-  Lightbulb
-} from "lucide-react";
+import { Cloud, MapPin, DollarSign, Calendar, FileText, Settings, ChartBar as BarChart3, Route, Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Dashboard = () => {
